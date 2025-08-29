@@ -13,15 +13,22 @@
             <button type="submit" class="btn btn-primary">検索</button>
         </div>
     </form>
+         <div class="d-flex justify-content-end mb-3">
+             @auth
+            <a href="{{ route('questions.create') }}" class="btn btn-success">質問投稿</a>
+             @endauth
+        </div>
+
+
 
     {{-- 📋 質問一覧 --}}
     @forelse($questions as $question)
         <div class="card mb-3">
             <div class="card-body">
                 <h5>
-                    <a href="{{ route('questions.show', $question->id) }}">
+                      <a href="{{ route('questions.show', $question->id) }}"> 
                         {{ $question->title }}
-                    </a>
+                      </a>
                 </h5>
                 <p>{{ Str::limit($question->body, 100) }}</p>
                 <small>

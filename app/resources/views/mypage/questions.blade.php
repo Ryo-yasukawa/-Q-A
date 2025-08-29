@@ -8,7 +8,7 @@
         <ul class="list-group">
             @foreach ($questions as $question)
                 <li class="list-group-item">
-                    <a href="{{ route('questions.show', $question->id) }}">
+                    <a href="{{ route('mypage.questions.show', $question->id) }}">
                         {{ $question->title }}
                     </a>
                     <small class="text-muted d-block">投稿日: {{ $question->created_at->format('Y-m-d') }}</small>

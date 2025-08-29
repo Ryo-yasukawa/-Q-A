@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Question;
 class HomeController extends Controller
@@ -23,10 +23,11 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-         $keyword = $request->input('keyword');
-
+           
+        $keyword = $request->input('keyword');
         $query = Question::query()->with('user'); // 投稿者情報を取得
 
+         
         if (!empty($keyword)) {
             $query->where('title', 'like', "%{$keyword}%")
                   ->orWhere('body', 'like', "%{$keyword}%");

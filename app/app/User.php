@@ -38,19 +38,19 @@ class User extends Authenticatable
     ];
      public function questions()
     {
-        return $this->hasMany(\App\Models\Question::class);
+        return $this->hasMany(\App\Question::class);
     }
 
     // 自分の回答
     public function answers()
     {
-        return $this->hasMany(\App\Models\Answer::class);
+        return $this->hasMany(\App\Answer::class);
     }
 
     // 自分のブックマーク
     public function bookmarks()
     {
-        return $this->hasMany(\App\Models\Bookmark::class);
+        return $this->hasMany(\App\Bookmark::class);
     }
 
 }

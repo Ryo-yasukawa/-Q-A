@@ -7,79 +7,26 @@ use Illuminate\Http\Request;
 
 class BookmarkController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+   // ブックマーク追加
+    public function store($questionId)
     {
-        //
+        $question = Question::findOrFail($questionId);
+
+        Bookmark::firstOrCreate([
+            'user_id' => Auth::id(),
+            'question_id' => $question->id,
+        ]);
+
+        return back()->with('status', 'ブックマークしました');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    // ブックマーク解除
+    public function destroy($questionId)
     {
-        //
-    }
+        Bookmark::where('user_id', Auth::id())
+                ->where('question_id', $questionId)
+                ->delete();
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Bookmark  $bookmark
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Bookmark $bookmark)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Bookmark  $bookmark
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Bookmark $bookmark)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Bookmark  $bookmark
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Bookmark $bookmark)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Bookmark  $bookmark
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Bookmark $bookmark)
-    {
-        //
+        return back()->with('status', 'ブックマークを解除しました');
     }
 }
