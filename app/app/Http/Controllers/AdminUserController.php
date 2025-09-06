@@ -27,26 +27,27 @@ class AdminUserController extends Controller
     }
 
     // 詳細
-    public function show($id)
+    public function show(User $user)
     {
-        $user = User::findOrFail($id);
-        return view('admin.users.show', compact('user'));
+        // $user = User::findOrFail($id);
+      $reportedQuestions = $user->questions()->whereHas('reports')->with('reports')->get();
+      $reportedAnswers   = $user->answers()->whereHas('reports')->with('reports')->get();
+
+    return view('admin.users.show', compact('user', 'reportedQuestions', 'reportedAnswers'));
     }
 
-    // 編集画面
-    public function edit($id)
-    {
-        $user = User::findOrFail($id);
-        return view('admin.users.edit', compact('user'));
-    }
-
+    
     // 更新処理
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        $user = User::findOrFail($id);
-        $user->is_active = $request->input('is_active', 1);
-        $user->save();
+        $user->is_active = $request->input('is_active', $user->is_active);
+    $user->save();
 
-        return redirect()->route('admin.users.show', $id)->with('status', 'ユーザー情報を更新しました');
-    }
+    return redirect()
+        ->route('admin.users.show', $user->id)
+        ->with('status', 'ユーザーの利用状態を更新しました');
+    } 
+        
+
+    
 }

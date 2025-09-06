@@ -22,28 +22,27 @@ class AdminQuestionController extends Controller
     }
 
     // 詳細画面
-    public function show($id)
+    public function show(Question $question)
     {
-        $question = Question::findOrFail($id);
-        $reports = QuestionReport::where('question_id', $id)->orderByDesc('created_at')->get();
+        // $question = Question::findOrFail($id);
+        $reports = QuestionReport::where('question_id', $question->id)
+        ->with('user')
+        ->orderByDesc('created_at')
+        ->get();
 
         return view('admin.questions.show', compact('question', 'reports'));
     }
+ 
+    // 更新処理（質問の表示/非表示切り替え専用）
+public function update(Request $request, Question $question)
+{
+    // hidden フィールドから送られてくる値 (0 or 1) をそのまま反映
+    $question->is_visible = $request->input('is_visible', $question->is_visible);
+    $question->save();
 
-    // 編集画面
-    public function edit($id)
-    {
-        $question = Question::findOrFail($id);
-        return view('admin.questions.edit', compact('question'));
-    }
-
-    // 更新処理
-    public function update(Request $request, $id)
-    {
-        $question = Question::findOrFail($id);
-        $question->is_visible = $request->input('is_visible', 1);  // デフォルト表示
-        $question->save();
-
-        return redirect()->route('admin.questions.show', $id)->with('status', '質問を更新しました');
-    }
+    return redirect()
+        ->route('admin.questions.show', $question->id)
+        ->with('status', '質問の表示状態を更新しました');
+}
+    
 }

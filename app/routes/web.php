@@ -6,7 +6,6 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\BookmarkController;
-use App\Http\Controllers\QuestionController as MypageQuestionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminQuestionController;
 use App\Http\Controllers\AdminAnswerController;
@@ -30,7 +29,7 @@ use App\Http\Controllers\AdminUserController;
 Auth::routes();
 Route::get('/', [HomeController::class,'index'])->name('home');
 
-Route::middleware('auth')->group(function() {
+    Route::middleware(['auth', 'check.active'])->group(function() {
     Route::get('/mypage', [MyPageController::class, 'index'])->name('mypage');
 
     // プロフィール編集
@@ -43,10 +42,10 @@ Route::middleware('auth')->group(function() {
 
     // ===== 投稿履歴 =====
     Route::get('/mypage/questions', [QuestionController::class, 'myQuestions'])->name('mypage.questions');  // 自分の質問一覧
-    Route::get('/mypage/questions/{id}', [QuestionController::class, 'myQuestionShow'])->name('mypage.questions.show'); // 自分の質問詳細
+    Route::get('/mypage/questions/{question}', [QuestionController::class, 'myQuestionShow'])->name('mypage.questions.show'); // 自分の質問詳細
 
     Route::get('/mypage/answers', [AnswerController::class, 'myAnswers'])->name('mypage.answers'); // 自分の回答一覧
-    Route::get('/mypage/answers/{id}', [AnswerController::class, 'myAnswerShow'])->name('mypage.answers.show'); // 自分の回答詳細
+    Route::get('/mypage/answers/{answer}', [AnswerController::class, 'myAnswerShow'])->name('mypage.answers.show'); // 自分の回答詳細
 
     Route::get('/mypage/bookmarks', [MyPageController::class, 'myBookmarks'])->name('mypage.bookmarks');
 
@@ -55,26 +54,45 @@ Route::middleware('auth')->group(function() {
     Route::post('/questions', [QuestionController::class, 'store'])->name('questions.store');
 
     // 編集・削除（自分の質問のみ）
-    Route::get('/mypage/questions/{id}/edit', [QuestionController::class, 'edit'])->name('mypage.questions.edit');
-    Route::put('/mypage/questions/{id}', [QuestionController::class, 'update'])->name('mypage.questions.update');
-    Route::delete('/mypage/questions/{id}', [QuestionController::class, 'destroy'])->name('mypage.questions.destroy');
+    Route::get('/mypage/questions/{question}/edit', [QuestionController::class, 'edit'])->name('mypage.questions.edit');
+    Route::put('/mypage/questions/{question}', [QuestionController::class, 'update'])->name('mypage.questions.update');
+    Route::delete('/mypage/questions/{question}', [QuestionController::class, 'destroy'])->name('mypage.questions.destroy');
 
     // ===== 回答関連 =====
     Route::get('/questions/{question}/answers/create', [AnswerController::class, 'create'])->name('answers.create');
     Route::post('/questions/{question}/answers', [AnswerController::class, 'store'])->name('answers.store');
 
     // 編集・削除（自分の回答のみ）
-    Route::get('/mypage/answers/{id}/edit', [AnswerController::class, 'edit'])->name('mypage.answers.edit');
-    Route::put('/mypage/answers/{id}', [AnswerController::class, 'update'])->name('mypage.answers.update');
-    Route::delete('/mypage/answers/{id}', [AnswerController::class, 'destroy'])->name('mypage.answers.destroy');
+    Route::get('/mypage/answers/{answer}/edit', [AnswerController::class, 'edit'])->name('mypage.answers.edit');
+    Route::put('/mypage/answers/{answer}', [AnswerController::class, 'update'])->name('mypage.answers.update');
+    Route::delete('/mypage/answers/{answer}', [AnswerController::class, 'destroy'])->name('mypage.answers.destroy');
 
     // ===== 通報・コメント =====
-    Route::post('/questions/{question}/report', [ReportController::class, 'reportQuestion'])->name('questions.report');
+//     Route::post('/questions/{question}/report', [ReportController::class, 'reportQuestion'])->name('questions.report');
     Route::post('/answers/{answer}/comments', [CommentController::class, 'store'])->name('comments.store');
+     // 通報フォーム表示
+    Route::get('/questions/{question}/report', [ReportController::class, 'showQuestionReportForm'])
+         ->name('questions.report.show')
+         ->middleware('auth');
+      // 回答の通報フォーム表示
+      Route::get('/answers/{answer}/report', [ReportController::class, 'showAnswerReportForm'])->name('answers.report.form');
+
+      // 回答の通報送信
+      Route::post('/answers/{answer}/report', [ReportController::class, 'submitAnswerReport'])->name('answers.report.submit');
+
+// 通報送信
+    Route::post('/questions/{question}/report', [ReportController::class, 'storeQuestionReport'])
+         ->name('questions.report.store')
+         ->middleware('auth');
 
     // ===== ブックマーク =====
-    Route::post('/questions/{id}/bookmark', [BookmarkController::class, 'store'])->name('bookmarks.store');
-    Route::delete('/questions/{id}/bookmark', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+//     Route::post('/questions/{question}/bookmark', [BookmarkController::class, 'store'])->name('bookmarks.store');
+//     Route::delete('/questions/{question}/bookmark', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+
+     Route::post('/questions/{question}/bookmark', [BookmarkController::class, 'store'])
+          ->name('bookmarks.store');
+     Route::delete('/questions/{question}/bookmark', [BookmarkController::class, 'destroy'])
+          ->name('bookmarks.destroy');
 
     
 });
@@ -86,21 +104,18 @@ Route::middleware('auth')->group(function() {
 
     // 質問管理
     Route::get('/questions', [AdminQuestionController::class, 'index'])->name('admin.questions.index');            
-    Route::get('/questions/{id}', [AdminQuestionController::class, 'show'])->name('admin.questions.show');          
-    Route::get('/questions/{id}/edit', [AdminQuestionController::class, 'edit'])->name('admin.questions.edit');     
-    Route::put('/questions/{id}', [AdminQuestionController::class, 'update'])->name('admin.questions.update');   
+    Route::get('/questions/{question}', [AdminQuestionController::class, 'show'])->name('admin.questions.show');          
+    Route::put('/questions/{question}', [AdminQuestionController::class, 'update'])->name('admin.questions.update');   
     
     // 回答管理
     Route::get('/answers', [AdminAnswerController::class, 'index'])->name('admin.answers.index');           
-    Route::get('/answers/{id}', [AdminAnswerController::class, 'show'])->name('admin.answers.show');         
-    Route::get('/answers/{id}/edit', [AdminAnswerController::class, 'edit'])->name('admin.answers.edit');    
-    Route::put('/answers/{id}', [AdminAnswerController::class, 'update'])->name('admin.answers.update');    
+    Route::get('/answers/{answer}', [AdminAnswerController::class, 'show'])->name('admin.answers.show');         
+    Route::put('/answers/{answer}', [AdminAnswerController::class, 'update'])->name('admin.answers.update');    
     
     // ユーザー管理
     Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');           
-    Route::get('/users/{id}', [AdminUserController::class, 'show'])->name('admin.users.show');         
-    Route::get('/users/{id}/edit', [AdminUserController::class, 'edit'])->name('admin.users.edit');    
-    Route::put('/users/{id}', [AdminUserController::class, 'update'])->name('admin.users.update');     
+    Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('admin.users.show');             
+    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');     
   
 });
 

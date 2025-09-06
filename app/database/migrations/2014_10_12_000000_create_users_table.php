@@ -18,7 +18,8 @@ class CreateUsersTable extends Migration
         $table->string('profile_image', 255)->nullable();
         $table->text('introduction')->nullable();
         $table->integer('role')->default(2); 
-        $table->integer('is_active')->default(0); 
+        $table->integer('is_active')->default(1);
+         $table->string('image_path')->nullable(); 
         $table->timestamps();
         });
     }

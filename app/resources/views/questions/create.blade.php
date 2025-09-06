@@ -8,17 +8,26 @@
         @csrf
         <div class="form-group">
             <label for="title">タイトル</label>
-            <input type="text" name="title" class="form-control" value="{{ old('title') }}" required>
+            <input type="text" name="title" class="form-control" value="{{ old('title') }}" >
+            @error('title')
+                     <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="form-group">
             <label for="body">本文</label>
-            <textarea name="body" class="form-control" rows="5" required>{{ old('body') }}</textarea>
+            <textarea name="body" class="form-control" rows="5">{{ old('body') }}</textarea>
+             @error('body')
+               <div class="text-danger mt-1">{{ $message }}</div>
+             @enderror
         </div>
 
         <div class="form-group">
-            <label for="image">画像（任意）</label>
+            <label for="image">画像（必須）</label>
             <input type="file" name="image" class="form-control-file">
+            @error('image')
+              <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
         <button type="submit" class="btn btn-primary mt-3">投稿する</button>

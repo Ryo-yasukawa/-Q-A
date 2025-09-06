@@ -6,26 +6,23 @@ use App\Answer;
 use App\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\AnswerRequest;
 
 class AnswerController extends Controller
 {
 
     // 回答作成画面
-    public function create($questionId)
+    public function create(Question $question)
     {
-        $question = Question::findOrFail($questionId);
+        // $question = Question::findOrFail($questionId);
         return view('answers.create', compact('question'));
     }
 
     // 回答保存
-    public function store(Request $request, $questionId)
+    public function store(AnswerRequest $request, Question $question)
     {
-        $request->validate([
-            'body' => 'required|string',       // textarea の name="body" に合わせる
-            'image' => 'nullable|image|max:2048', // 任意の画像添付
-        ]);
-
-        $question = Question::findOrFail($questionId);
+    
+        // $question = Question::findOrFail($questionId);
 
         $answer = new Answer();
         $answer->user_id = Auth::id();
@@ -52,36 +49,33 @@ class AnswerController extends Controller
     return view('mypage.answers', compact('answers'));
 }
 
-public function myAnswerShow($id)
+public function myAnswerShow(Answer $answer)
 {
-    $answer = Answer::where('id', $id)
-                    ->where('user_id', auth()->id())
-                    ->firstOrFail();
-
+    // $answer = Answer::where('id', $id)
+    //                 ->where('user_id', auth()->id())
+    //                 ->firstOrFail();
+     $this->authorize('update', $answer);
     $question = $answer->question; // リレーション前提
     return view('answers.my_show', compact('answer', 'question'));
 }
 
    // 編集画面
-public function edit($id)
+public function edit(Answer $answer)
 {
-    $answer = Answer::where('id', $id)
-                    ->where('user_id', auth()->id())
-                    ->firstOrFail();
+    // $answer = Answer::where('id', $id)
+    //                 ->where('user_id', auth()->id())
+    //                 ->firstOrFail();
+     $this->authorize('update', $answer);
     return view('answers.edit', compact('answer'));
 }
 
 // 更新処理
-public function update(Request $request, $id)
+public function update(AnswerRequest $request, Answer $answer)
 {
-    $request->validate([
-        'body' => 'required|string',
-        'image' => 'nullable|image|max:2048',
-    ]);
-
-    $answer = Answer::where('id', $id)
-                    ->where('user_id', auth()->id())
-                    ->firstOrFail();
+    
+    // $answer = Answer::where('id', $id)
+    //                 ->where('user_id', auth()->id())
+    //                 ->firstOrFail();
 
     $answer->body = $request->body;
 
@@ -98,11 +92,12 @@ public function update(Request $request, $id)
 }
 
 // 削除処理
-public function destroy($id)
+public function destroy(Answer $answer)
 {
-    $answer = Answer::where('id', $id)
-                    ->where('user_id', auth()->id())
-                    ->firstOrFail();
+    // $answer = Answer::where('id', $id)
+    //                 ->where('user_id', auth()->id())
+    //                 ->firstOrFail();
+    $this->authorize('delete', $answer);
     $answer->delete();
 
     return redirect()->route('mypage.answers')->with('status', '回答を削除しました');

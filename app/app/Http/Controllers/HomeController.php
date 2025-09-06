@@ -25,13 +25,20 @@ class HomeController extends Controller
     {
            
         $keyword = $request->input('keyword');
-        $query = Question::query()->with('user'); // 投稿者情報を取得
+        $query = Question::where('is_visible', 1)->with('user');
 
          
         if (!empty($keyword)) {
-            $query->where('title', 'like', "%{$keyword}%")
-                  ->orWhere('body', 'like', "%{$keyword}%");
-        }
+           $query->where(function($q) use ($keyword) {
+        $q->where('title', 'like', "%{$keyword}%")
+          ->orWhere('body', 'like', "%{$keyword}%");
+        });
+    }
+
+    if ($request->filled('from_date')) {
+        $fromDate = $request->from_date;
+        $query->whereDate('created_at', '>=', $fromDate);
+    }
 
         $questions = $query->latest()->paginate(10);
 

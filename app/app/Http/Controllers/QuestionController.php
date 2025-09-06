@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Question;
+use App\Http\Requests\QuestionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class QuestionController extends Controller
 {
@@ -14,29 +16,36 @@ class QuestionController extends Controller
     }
 
     // 投稿処理
-    public function store(Request $request)
+    public function store(QuestionRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'body' => 'required|string',
-            'image' => 'nullable|image|max:2048',
-        ]);
+        $validated = $request->validated();
+
+        
 
         $question = new Question();
         $question->user_id = Auth::id(); // 投稿者ID
-        $question->title = $request->title;
-        $question->body = $request->body;
+        $question->title = $validated['title'];
+        $question->body  = $validated['body'];
+     // 画像保存
+         if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('questions', 'public');
+        $question->image_path = $path;  // ← ここを追加
+    }
+
         $question->save();
 
         return redirect()->route('home')->with('status', '質問を投稿しました');
     } 
 
-    public function show($id)
+    public function show(Question $question)
 {
-    $question = \App\Question::with(['answers.comments', 'user'])->findOrFail($id);
-
+    
     // 回答も取得（コメント付き）
-    $answers = $question->answers()->with('comments')->get();
+   
+    $answers = $question->answers()
+                        ->where('is_visible', 1)
+                        ->with('comments')
+                        ->get();
 
     return view('questions.show', compact('question', 'answers'));
 }
@@ -50,40 +59,36 @@ class QuestionController extends Controller
 }
 
 
-public function myQuestionShow($id)
+public function myQuestionShow(Question $question)
 {
-  $question = Question::where('id', $id)
-                        ->where('user_id', auth()->id())
-                        ->firstOrFail();
-
+//   $question = Question::where('id', $id)
+//                         ->where('user_id', auth()->id())
+//                         ->firstOrFail();
+    $this->authorize('update', $question);
     $answers = $question->answers; // リレーション前提
     return view('questions.my_show', compact('question', 'answers'));
 }
 // 編集画面
-public function edit($id)
+public function edit(Question $question)
 {
-    $question = Question::where('id', $id)
-                        ->where('user_id', auth()->id())
-                        ->firstOrFail();
+    // $question = Question::where('id', $id)
+    //                     ->where('user_id', auth()->id())
+    //                     ->firstOrFail();
+     $this->authorize('update', $question);
     return view('questions.edit', compact('question'));
 }
 
 // 更新処理
-public function update(Request $request, $id)
+public function update(QuestionRequest $request, Question $question)
 {
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'body' => 'required|string',
-        'image' => 'nullable|image|max:2048',
-    ]);
+    $validated = $request->validated();
 
-    $question = Question::where('id', $id)
-                        ->where('user_id', auth()->id())
-                        ->firstOrFail();
+    // $question = Question::where('id', $id)
+    //                     ->where('user_id', auth()->id())
+    //                     ->firstOrFail();
 
-    $question->title = $request->title;
-    $question->body = $request->body;
-
+    $question->title = $validated['title'];
+    $question->body  = $validated['body'];
     // 画像保存
     if ($request->hasFile('image')) {
         $path = $request->file('image')->store('questions', 'public');

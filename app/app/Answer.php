@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Answer extends Model
 {
-  protected $fillable = ['user_id', 'question_id', 'content'];
+  protected $fillable = ['user_id', 'question_id', 'content','image_path'];
 
     public function question()
     {
@@ -21,5 +21,10 @@ class Answer extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function reports()
+    {
+        return $this->hasMany(AnswerReport::class);
     }
 }

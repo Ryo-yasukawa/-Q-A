@@ -19,7 +19,7 @@
         </div>
 
         <div class="form-group">
-            <label for="image">画像（任意）</label>
+            <label for="image">画像（必須）</label>
             <input type="file" name="image" class="form-control-file">
             @if($question->image_path)
                 <p class="mt-2">現在の画像: <a href="{{ asset('storage/' . $question->image_path) }}" target="_blank">表示</a></p>

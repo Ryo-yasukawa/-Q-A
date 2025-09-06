@@ -19,6 +19,16 @@
         <p><strong>表示状態:</strong> {{ $answer->is_visible ? '表示中' : '停止中' }}</p>
     </div>
 
+<!-- 表示/停止切替ボタン -->
+    <form action="{{ route('admin.answers.update', $answer->id) }}" method="POST" style="display:inline;">
+        @csrf
+        @method('PUT')
+        <input type="hidden" name="is_visible" value="{{ $answer->is_visible ? 0 : 1 }}">
+        <button type="submit">
+            {{ $answer->is_visible ? '非表示にする' : '表示にする' }}
+        </button>
+    </form>
+
     <!-- 違反報告一覧 -->
     <h2>違反報告一覧</h2>
     @if($reports->isEmpty())
@@ -47,13 +57,6 @@
             </tbody>
         </table>
     @endif
-
-    <!-- 編集ボタン -->
-    <div style="margin-top: 20px;">
-        <a href="{{ route('admin.answers.edit', $answer->id) }}">
-            <button>編集</button>
-        </a>
-    </div>
 
 </div>
 @endsection

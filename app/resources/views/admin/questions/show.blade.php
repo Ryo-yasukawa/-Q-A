@@ -19,6 +19,16 @@
         <p><strong>投稿日:</strong> {{ $question->created_at->format('Y-m-d') }}</p>
         <p><strong>表示状態:</strong> {{ $question->is_visible ? '表示中' : '停止中' }}</p>
     </div>
+        
+<!-- 表示/停止切替ボタン -->
+<form action="{{ route('admin.questions.update', $question->id) }}" method="POST" style="display:inline;">
+    @csrf
+    @method('PUT')
+    <input type="hidden" name="is_visible" value="{{ $question->is_visible ? 0 : 1 }}">
+    <button type="submit">
+        {{ $question->is_visible ? '非表示にする' : '表示にする' }}
+    </button>
+</form>
 
     <!-- 違反報告一覧 -->
     <h2>違反報告一覧</h2>
@@ -49,12 +59,6 @@
         </table>
     @endif
 
-    <!-- 編集ボタン -->
-    <div style="margin-top: 20px;">
-        <a href="{{ route('admin.questions.edit', $question->id) }}">
-            <button>編集</button>
-        </a>
-    </div>
-
+  
 </div>
 @endsection

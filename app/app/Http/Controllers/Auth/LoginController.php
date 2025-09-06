@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     /*
@@ -23,6 +24,14 @@ class LoginController extends Controller
 
      protected function authenticated($request, $user)
     {
+
+        if ($user->is_active == 0) {
+            Auth::logout(); // 強制ログアウト
+            return redirect()->route('login')->withErrors([
+                'email' => 'このアカウントは利用停止されています。',
+            ]);
+        }
+
         if ($user->role == 1) {
             // 管理者はダッシュボードへ
             return redirect()->route('admin.dashboard');
