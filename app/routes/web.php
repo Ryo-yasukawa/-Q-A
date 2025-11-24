@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminQuestionController;
 use App\Http\Controllers\AdminAnswerController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\TestMailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,4 +121,4 @@ Route::get('/', [HomeController::class,'index'])->name('home');
 });
 
      Route::get('/questions/{question}', [QuestionController::class, 'show'])->name('questions.show');
-   
+     Route::get('/send-test-mail', [TestMailController::class, 'sendTest']);

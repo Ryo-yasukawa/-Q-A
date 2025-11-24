@@ -62,7 +62,7 @@
                 @if($answer->image_path)
                     <div class="mb-2 text-center">
                         <img src="{{ asset('storage/' . $answer->image_path) }}" 
-                             alt="回答画像" class="rounded" style="max-width: 100%; height: auto;">
+                             alt="回答画像" class="rounded" style="max-width: 70%; height: auto;">
                     </div>
                 @endif
 

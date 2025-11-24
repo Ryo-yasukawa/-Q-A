@@ -106,13 +106,13 @@ $(document).on('click', '.bookmark-btn', function () {
         success: function (res) {
             if (isBookmarked) {
                 button
-                    .text('☆ ブックマーク')
+                    .text('☆ お気に入り')
                     .removeClass('btn-warning')
                     .addClass('btn-outline-warning')
                     .data('bookmarked', false);
             } else {
                 button
-                    .text('★ ブックマーク解除')
+                    .text('★ お気に入り解除')
                     .removeClass('btn-outline-warning')
                     .addClass('btn-warning')
                     .data('bookmarked', true);

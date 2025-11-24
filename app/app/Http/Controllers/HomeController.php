@@ -40,7 +40,7 @@ class HomeController extends Controller
         $query->whereDate('created_at', '>=', $fromDate);
     }
 
-        $questions = $query->latest()->paginate(10);
+        $questions = $query->latest()->paginate(4);
 
         return view('home', compact('questions', 'keyword'));
     }

@@ -53,13 +53,7 @@
                         {{ $question->body }}
                     </p>
 
-                    {{-- タグ --}}
-                    <div class="mt-auto mb-2">
-                        @foreach($question->tags ?? ['タグ1','タグ2'] as $tag)
-                            <span class="badge bg-warning text-dark me-1">{{ $tag }}</span>
-                        @endforeach
-                    </div>
-
+                
                     {{-- 投稿者・日時 --}}
                     <small class="text-white-50">
                         投稿者: {{ $question->user->name ?? '不明' }} | 投稿日: {{ $question->created_at->format('Y-m-d H:i') }}

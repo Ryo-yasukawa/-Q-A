@@ -1,42 +1,57 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <h1>質問管理一覧</h1>
+<div class="container py-4">
+
+    <h1 class="fw-bold text-secondary text-center mb-4">質問管理一覧</h1>
 
     @if(session('status'))
-        <div style="color: green;">
+        <div class="alert alert-success">
             {{ session('status') }}
         </div>
     @endif
 
-    <table border="1" cellpadding="8" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>タイトル</th>
-                <th>投稿者</th>
-                <th>投稿日</th>
-                <th>違反報告数</th>
-                <th>表示状態</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($questions as $q)
-                <tr>
-                    <td>{{ $q->id }}</td>
-                    <td><a href="{{ route('admin.questions.show', $q->id) }}">{{ $q->title }}</a></td>
-                    <td>{{ $q->user->name ?? '削除済みユーザー' }}</td>
-                    <td>{{ $q->created_at->format('Y-m-d') }}</td>
-                    <td>{{ $q->reports_count }}</td>
-                    <td>{{ $q->is_visible ? '表示中' : '停止中' }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="card shadow-sm rounded-4">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>タイトル</th>
+                        <th>投稿者</th>
+                        <th>投稿日</th>
+                        <th>違反報告数</th>
+                        <th>表示状態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($questions as $q)
+                        <tr>
+                            <td>{{ $q->id }}</td>
+                            <td>
+                                <a href="{{ route('admin.questions.show', $q->id) }}" class="text-decoration-none text-primary">
+                                    {{ $q->title }}
+                                </a>
+                            </td>
+                            <td>{{ $q->user->name ?? '削除済みユーザー' }}</td>
+                            <td>{{ $q->created_at->format('Y-m-d') }}</td>
+                            <td>{{ $q->reports_count }}</td>
+                            <td>
+                                @if($q->is_visible)
+                                    <span class="badge bg-success">表示中</span>
+                                @else
+                                    <span class="badge bg-secondary">停止中</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <!-- ページネーション -->
-    <div style="margin-top: 20px;">
+    <div class="mt-3 d-flex justify-content-center">
         {{ $questions->links() }}
     </div>
 </div>

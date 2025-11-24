@@ -58,7 +58,12 @@ class MyPageController extends Controller
 
     public function myBookmarks()
     {
-        $bookmarks = Auth::user()->bookmarks()->with('question')->paginate(10);
+       $bookmarks = Auth::user()
+        ->bookmarks()
+        ->whereHas('question') // 削除済みの質問を除外
+        ->with('question')
+        ->paginate(10);
+        
         return view('mypage.bookmarks', compact('bookmarks'));
     }
 

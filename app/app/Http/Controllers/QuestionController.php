@@ -71,11 +71,21 @@ public function myQuestionShow(Question $question)
 // 編集画面
 public function edit(Question $question)
 {
-    // $question = Question::where('id', $id)
-    //                     ->where('user_id', auth()->id())
-    //                     ->firstOrFail();
+    
      $this->authorize('update', $question);
     return view('questions.edit', compact('question'));
+}
+
+// 質問削除
+public function destroy(Question $question)
+{
+    // ポリシーで自分の質問か確認
+    $this->authorize('delete', $question);
+
+    $question->delete();
+
+    return redirect()->route('mypage.questions')
+                     ->with('status', '質問を削除しました');
 }
 
 // 更新処理
